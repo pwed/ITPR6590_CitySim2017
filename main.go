@@ -3,33 +3,95 @@
 // Team members: Frederick Stoddart, Levi Fraser-Daley, Nikolas Burke
 package main
 
-import "fmt"
+import (
+	"encoding/json"
+	"fmt"
+)
 
 // A location representing a suburb in a city
 type funCityLoc struct {
-	name        string
-	outsideCity bool
+	Name       string
+	Connectors []funConnector
 }
 
-//
-type funStreet struct {
-	name string
-	exit funExit
+// A collection of streets that connect two areas and an exit to leave the city
+type funConnector struct {
+	Streets []funStreet
+	Exit    funExit
 }
 
+// A street connecting two locations and an exit.
+// Can comprise of multiple physical streets
+type funStreet string
+
+// An exit leading to Outside City
 type funExit string
 
+// A driver to be used in the simulation
 type funDriver struct {
-	number int
-	name   string
+	Number int
+	Name   string
+}
+
+var akinaStortfordLodgeConnector = funConnector{
+	[]funStreet{
+		"Southhampton St W",
+	},
+	"Railway Rd S",
+}
+
+var stortfordLodgeMahoraConnector = funConnector{
+	[]funStreet{
+		"Maraekakaho Rd",
+		"Pakowhai Rd",
+	},
+	"Omahu Rd",
+}
+
+var mahoraMayfairConnector = funConnector{
+	[]funStreet{
+		"Frederick St",
+		"Grove Rd",
+	},
+	"Karamu Rd",
+}
+
+var akinaMayfairConnector = funConnector{
+	[]funStreet{
+		"Willowpark Rd",
+	},
+	"Havelock Rd",
 }
 
 var hastings = []funCityLoc{
-	{"Mayfair", false},
-	{"Akina", false},
-	{"Stortford Lodge", false},
-	{"Mahora", false},
-	{"Outside City", true},
+	{
+		"Mayfair",
+		[]funConnector{
+			akinaMayfairConnector,
+			mahoraMayfairConnector,
+		},
+	},
+	{
+		"Akina",
+		[]funConnector{
+			akinaMayfairConnector,
+			akinaStortfordLodgeConnector,
+		},
+	},
+	{
+		"Stortford Lodge",
+		[]funConnector{
+			stortfordLodgeMahoraConnector,
+			akinaStortfordLodgeConnector,
+		},
+	},
+	{
+		"Mahora",
+		[]funConnector{
+			mahoraMayfairConnector,
+			stortfordLodgeMahoraConnector,
+		},
+	},
 }
 
 var drivers = []funDriver{
@@ -43,7 +105,9 @@ var drivers = []funDriver{
 // Main() :p
 func main() {
 
-	fmt.Println(hastings)
+	// This code is just to clear the unused variable warnings (and I made it output pretty JSON)
+	hastingsJson, _ := json.MarshalIndent(hastings, "", "  ")
+	fmt.Println(string(hastingsJson))
 	fmt.Println(drivers)
 
 }
