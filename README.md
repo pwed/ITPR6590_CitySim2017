@@ -1,2 +1,2 @@
 # ITPR6590_CitySim2017
-A overly simplified traffic simulation
+An overly simplified traffic simulation
