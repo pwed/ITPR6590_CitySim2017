@@ -123,10 +123,6 @@ var (
 // Main() :p
 func main() {
 
-	// This code is just to clear the unused variable warnings (and I made it output pretty JSON)
-	hastingsJson, _ := json.MarshalIndent(hastings, "", "  ")
-	fmt.Println(string(hastingsJson))
-	fmt.Println(drivers)
 
 	args := os.Args
 	// TODO check args are correct
@@ -141,43 +137,46 @@ func main() {
 	rand.Seed(seed)
 
 	for i := 0; i < len(drivers); i++ {
+
+		log := fmt.Sprintf("Driver: %v, is starting their trip \n", drivers[i].Name)
+
 		s := rand.NewSource(rand.Int63())
 
 		r := rand.New(s)
 
-		fmt.Printf("%v \n", r.Int())
-
 		currentPos := startSim(r)
 
-		insideCity := true
-		//j, _ := json.Marshal(&currentPos)
-		//fmt.Println(string(j))
+		log = log + fmt.Sprintf("They are starting in %v \n", currentPos.Name)
 
-		//count := 0
+		insideCity := true
 
 		for insideCity {
 
 			// TODO continue with inside city code
 
 			route := pickRoute(r, currentPos)
-			j, _ := json.Marshal(&route)
+			j, err := json.Marshal(&currentPos)
+			if err != nil {
+				// handle error
+				fmt.Println(err)
+				os.Exit(1)
+			}
+			fmt.Println(string(j))
 
 			if randInRange(0, 6, r) == 0 {
 				insideCity = false
+				fmt.Println(log)
 			} else {
 				if len(route.Destinations) == 1 {
 					currentPos = getLoc(route.Destinations[0])
 				} else {
-
+					if getLoc(route.Destinations[0]).Name == currentPos.Name {
+						currentPos = getLoc(route.Destinations[1])
+					} else {
+						currentPos = getLoc(route.Destinations[0])
+					}
 				}
 			}
-
-			fmt.Println(string(j))
-
-			//if count == 3 {
-			//	insideCity = false
-			//}
-			//count++
 		}
 	}
 
