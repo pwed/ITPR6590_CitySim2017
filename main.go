@@ -150,23 +150,34 @@ func main() {
 		currentPos := startSim(r)
 
 		insideCity := true
-		j, _ := json.Marshal(&currentPos)
-		fmt.Println(string(j))
+		//j, _ := json.Marshal(&currentPos)
+		//fmt.Println(string(j))
 
-		count := 0
+		//count := 0
 
 		for insideCity {
 
 			// TODO continue with inside city code
 
-			//route := pickRoute(r, currentPos)
-			j, _ := json.Marshal(&currentPos)
+			route := pickRoute(r, currentPos)
+			j, _ := json.Marshal(&route)
+
+			if randInRange(0, 6, r) == 0 {
+				insideCity = false
+			} else {
+				if len(route.Destinations) == 1 {
+					currentPos = getLoc(route.Destinations[0])
+				} else {
+
+				}
+			}
+
 			fmt.Println(string(j))
 
-			if count == 3 {
-				insideCity = false
-			}
-			count++
+			//if count == 3 {
+			//	insideCity = false
+			//}
+			//count++
 		}
 	}
 
@@ -183,5 +194,13 @@ func randInRange(min, max int64, rand *rand.Rand) int64 {
 func pickRoute(rand *rand.Rand, currentPos *funCityLoc) *funConnector {
 	c := &currentPos.Connectors[randInRange(0, int64(len(currentPos.Connectors)), rand)]
 	return c
+}
 
+func getLoc(locName string) *funCityLoc {
+	for i := 0; i < len(hastings); i++ {
+		if locName == hastings[i].Name {
+			return &hastings[i]
+		}
+	}
+	return nil
 }
