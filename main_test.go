@@ -121,5 +121,23 @@ func TestOtherCities(t *testing.T) {
 }
 
 func TestAkinaEdges(t *testing.T) {
+	fred := funDriver{1, "Fred"}
+
+	log := ""
+
+	if akinaEdges(0, log, fred) != "Driver Fred missed out! \n" {
+		t.Error("Fred should be missing out")
+	}
+
+	if akinaEdges(1, log, fred) != "" || akinaEdges(2, log, fred) != ""  {
+		t.Error("an empty string should be returned")
+	}
+
+	if akinaEdges(3, log, fred) != "Driver Fred needed lots of help! \n" {
+		t.Error("Fred should be needing help")
+	}
+}
+
+func TestCheckArgs(t *testing.T) {
 
 }

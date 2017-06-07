@@ -125,17 +125,7 @@ func main() {
 	// Fun Args
 	args := os.Args
 
-	if len(args) != 2 {
-		fmt.Println("Too many or not enough arguments!")
-		os.Exit(1)
-	}
-
-	seed, err := strconv.ParseInt(args[1], 10, 64)
-	if err != nil {
-		// handle error
-		fmt.Println(err)
-		os.Exit(2)
-	}
+	seed := checkArgs(args)
 
 	rand.Seed(seed)
 
@@ -210,6 +200,21 @@ func main() {
 		}
 	}
 
+}
+
+func checkArgs(args []string) int64 {
+	if len(args) != 2 {
+		fmt.Println("Too many or not enough arguments!")
+		os.Exit(1)
+	}
+
+	seed, err := strconv.ParseInt(args[1], 10, 64)
+	if err != nil {
+		fmt.Println("Argument is not an integer!")
+		fmt.Println(err)
+		os.Exit(2)
+	}
+	return seed
 }
 
 func otherCities(route *funConnector, log string, driver string) string {
