@@ -159,8 +159,6 @@ func main() {
 
 		for insideCity {
 
-			// TODO continue with inside city code
-
 			route := pickRoute(r, currentPos)
 
 			if randInRange(0, 6, r) == 0 {
@@ -175,15 +173,7 @@ func main() {
 				log = log + fmt.Sprintf("Driver %v visited John Jamerson in Akina %v times. \n",
 					drivers[i].Name, akinaCount)
 
-				if akinaCount >= 3 {
-					log = log + fmt.Sprintf("Driver %v needed lots of help! \n",
-						drivers[i].Name)
-				}
-
-				if akinaCount == 0 {
-					log = log + fmt.Sprintf("Driver %v missed out! \n",
-						drivers[i].Name)
-				}
+				log = akinaEdges(akinaCount, log, drivers[i])
 
 
 				// Fun Dashes
@@ -258,4 +248,17 @@ func getLoc(locName string) *funCityLoc {
 		}
 	}
 	return nil
+}
+
+func akinaEdges(count int, log string, driver funDriver) string {
+	if count >= 3 {
+		log = log + fmt.Sprintf("Driver %v needed lots of help! \n",
+			driver.Name)
+	}
+
+	if count == 0 {
+		log = log + fmt.Sprintf("Driver %v missed out! \n",
+			driver.Name)
+	}
+	return log
 }
