@@ -4,7 +4,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"math/rand"
 	"os"
@@ -116,16 +115,20 @@ var (
 		{2, "Caitlyn"},
 		{3, "Mason"},
 		{4, "Bea"},
-		{5, "Tara"},
+		{5, "Hayley"},
 	}
 )
 
 // Main() :p
 func main() {
 
-
+	// Fun Args
 	args := os.Args
-	// TODO check args are correct
+
+	if len(args) != 1 {
+		fmt.Println("Too many arguments!")
+		os.Exit(1)
+	}
 
 	seed, err := strconv.ParseInt(args[1], 10, 64)
 	if err != nil {
@@ -138,15 +141,19 @@ func main() {
 
 	for i := 0; i < len(drivers); i++ {
 
-		log := fmt.Sprintf("Driver: %v, is starting their trip \n", drivers[i].Name)
+		log := fmt.Sprintf("Driver %v, is beginning their trip, ", drivers[i].Name)
 
 		s := rand.NewSource(rand.Int63())
 
 		r := rand.New(s)
 
+		akinaCount := 0
+
 		currentPos := startSim(r)
 
-		log = log + fmt.Sprintf("They are starting in %v \n", currentPos.Name)
+		prevPos := currentPos
+
+		log = log + fmt.Sprintf("they are starting in %v. \n", currentPos.Name)
 
 		insideCity := true
 
@@ -155,20 +162,41 @@ func main() {
 			// TODO continue with inside city code
 
 			route := pickRoute(r, currentPos)
-			j, err := json.Marshal(&currentPos)
-			if err != nil {
-				// handle error
-				fmt.Println(err)
-				os.Exit(1)
-			}
-			fmt.Println(string(j))
 
 			if randInRange(0, 6, r) == 0 {
 				insideCity = false
+
+				log = log + fmt.Sprintf("Driver %v heading %v city to Outside City via %v. \n",
+					drivers[i].Name, currentPos.Name, route.Exit)
+
+				// Fun Other Cities
+				log = otherCities(route, log, drivers[i].Name)
+
+				log = log + fmt.Sprintf("Driver %v visited John Jamerson in Akina %v times. \n",
+					drivers[i].Name, akinaCount)
+
+				if akinaCount >= 3 {
+					log = log + fmt.Sprintf("Driver %v needed lots of help! \n",
+						drivers[i].Name)
+				}
+
+				if akinaCount == 0 {
+					log = log + fmt.Sprintf("Driver %v missed out! \n",
+						drivers[i].Name)
+				}
+
+
+				// Fun Dashes
+				log = log + fmt.Sprintf("-----")
+
 				fmt.Println(log)
 			} else {
+
+				prevPos = currentPos
+
 				if len(route.Destinations) == 1 {
 					currentPos = getLoc(route.Destinations[0])
+
 				} else {
 					if getLoc(route.Destinations[0]).Name == currentPos.Name {
 						currentPos = getLoc(route.Destinations[1])
@@ -177,9 +205,37 @@ func main() {
 					}
 				}
 			}
+			if insideCity {
+				log = log + fmt.Sprintf("Driver %v heading from %v to %v via ", drivers[i].Name,
+					prevPos.Name, currentPos.Name)
+				for i, street := range route.Streets {
+					if i > 1 {
+						log = log + fmt.Sprintf(" and ",)
+					}
+					log = log + fmt.Sprintf("%v", street,)
+				}
+				log = log + fmt.Sprintf(". \n",)
+			}
+			akinaCounting(currentPos, &akinaCount)
 		}
 	}
 
+}
+
+func otherCities(route *funConnector, log string, driver string) string {
+	if route.Exit == "Karamu Rd" {
+		return log + fmt.Sprintf("Driver %v left and gone to %v. \n", driver, "Napier")
+	}
+	if route.Exit == "Omahu Rd" {
+		return log + fmt.Sprintf("Driver %v left and gone to %v. \n", driver, "Flaxmere")
+	}
+	return log
+}
+
+func akinaCounting(pos *funCityLoc, count *int) {
+	if pos.Name == "Akina" {
+		*count++
+	}
 }
 
 func startSim(rand *rand.Rand) *funCityLoc {
