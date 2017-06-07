@@ -1,6 +1,11 @@
 package main
 
-import "testing"
+import (
+	"testing"
+	"os"
+	"os/exec"
+	"reflect"
+)
 
 func TestGetLoc(t *testing.T) {
 	hastings = []funCityLoc{
@@ -139,5 +144,56 @@ func TestAkinaEdges(t *testing.T) {
 }
 
 func TestCheckArgs(t *testing.T) {
+
+	tooManyArgs := []string{"appname", "1", "4"}
+
+	argsNotAnInt := []string{"appname", "h"}
+
+	goodArgs := []string{"appname", "1"}
+
+	notEnoughArgs := []string{"appname"}
+
+	if os.Getenv("too_many") == "1" {
+		checkArgs(tooManyArgs)
+		return
+	}
+
+	if os.Getenv("not_enough") == "1" {
+		checkArgs(notEnoughArgs)
+		return
+	}
+
+	if os.Getenv("not_int") == "1" {
+		checkArgs(argsNotAnInt)
+		return
+	}
+
+	if reflect.TypeOf(checkArgs(goodArgs)).String() != "int64" {
+		t.Error("should return an int64")
+	}
+
+	// The following tests are not complete and need to be fixed.
+	// The problem is that they call os.Exit() in the test and I'm not sure how to go about that
+
+	cmd := exec.Command(os.Args[0], "-test.run=TestCheckArgs")
+	cmd.Env = append(os.Environ(), "too_many=1")
+	err := cmd.Run()
+	if err == nil {
+		t.Error("Process should exit with exit code 1")
+	}
+
+	cmd = exec.Command(os.Args[0], "-test.run=TestCheckArgs")
+	cmd.Env = append(os.Environ(), "not_enough=1")
+	err = cmd.Run()
+	if err == nil {
+		t.Error("Process should exit with exit code 1")
+	}
+
+	cmd = exec.Command(os.Args[0], "-test.run=TestCheckArgs")
+	cmd.Env = append(os.Environ(), "not_int=1")
+	err = cmd.Run()
+	if err == nil {
+		t.Error("Process should exit with exit code 2")
+	}
 
 }
