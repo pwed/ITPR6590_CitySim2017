@@ -125,8 +125,8 @@ func main() {
 	// Fun Args
 	args := os.Args
 
-	if len(args) != 1 {
-		fmt.Println("Too many arguments!")
+	if len(args) != 2 {
+		fmt.Println("Too many or not enough arguments!")
 		os.Exit(1)
 	}
 
