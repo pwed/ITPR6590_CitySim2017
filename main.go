@@ -167,7 +167,7 @@ func main() {
 
 
 				// Fun Dashes
-				log = log + fmt.Sprintf("-----")
+				log = dashes(log)
 
 				fmt.Println(log)
 			} else {
@@ -200,6 +200,11 @@ func main() {
 		}
 	}
 
+}
+
+func dashes(log string) string {
+	log = log + fmt.Sprintf("-----")
+	return log
 }
 
 func checkArgs(args []string) int64 {

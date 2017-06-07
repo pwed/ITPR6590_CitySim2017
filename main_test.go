@@ -197,3 +197,11 @@ func TestCheckArgs(t *testing.T) {
 	}
 
 }
+
+func TestDashes(t *testing.T)  {
+	log := ""
+
+	if log = dashes(log); log != "-----" {
+		t.Error("The dashes are not added to the string")
+	}
+}
